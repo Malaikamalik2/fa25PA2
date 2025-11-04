@@ -6,6 +6,7 @@
 #define HEAP_H
 
 #include <iostream>
+#include "heap.h"
 using namespace std;
 
 struct MinHeap {

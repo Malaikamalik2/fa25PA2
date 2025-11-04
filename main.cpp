@@ -90,47 +90,72 @@ int createLeafNodes(int freq[]) {
 int buildEncodingTree(int nextFree) {
     MinHeap H;
     //pushing all leaf
-    for (int i = 0; i < nextFree; ++i) {
+    for (int i = 0; i < nextFree; ++i)
         H.push(i, weightArr);
         if (H.size==0)
             return -1;
         if (H.size ==1)
             return H.pop(weightArr);
-    int cur = nextFree;
-    while (H.size>1) {
-        int a = H.pop(weightArr);
-        int b = H.pop(weightArr);
+        int cur = nextFree;
+        while (H.size>1) {
+            int a = H.pop(weightArr);
+            int b = H.pop(weightArr);
 
-        charArr[cur]='\0';
-        weightArr[cur] = weightArr[a] + weightArr[b];
-        leftArr[cur] = a;
-        rightArr[cur] = b;
-        H.push(cur, weightArr);
-        cur++;
+            charArr[cur]='\0';
+            weightArr[cur] = weightArr[a] + weightArr[b];
+            leftArr[cur] = a;
+            rightArr[cur] = b;
+            H.push(cur, weightArr);
+            cur++;
 
+        }
+        return H.pop(weightArr);
     }
-    return H.pop(weightArr);}
+
+    // Step 4: Use an STL stack to generate codes
+    void generateCodes(int root, string codes[]) {
+    if (root<0)
+        return;
+    // TODO:
+    // Use stack<pair<int, string>> to simulate DFS traversal.
+    //defing item
+    struct Item {int node;string path;};
+    stack<Item> st;
+    st.push({root,""});
+    while(!st.empty()) {
+        Item it = st.top();
+        st.pop();
+        int v =it.node;
+        bool leaf=(leftArr[v]==-1 && rightArr[v]==-1);
+        if (leaf) {
+            char c =charArr[v];
+            string code= it.path.empty() ?"0" : it.path;
+            if (c>='a' && c<='z') codes[c-'a'] = code;
+        }else {
+            if (rightArr[v] != -1) st.push({rightArr[v], it.path+ "1"});
+            if (leftArr[v] != -1) st.push({leftArr[v], it.path+"0"});
+        }
+    }
 }
 
+                // Step 5: Print table and encoded message
+                void encodeMessage(const string& filename, string codes[]) {
+                    cout << "\nCharacter : Code\n";
+                    for (int i = 0; i < 26; ++i) {
+                        if (!codes[i].empty())
+                            cout << char('a' + i) << " : " << codes[i] << "\n";
+                    }
 
-// Step 5: Print table and encoded message
-void encodeMessage(const string& filename, string codes[]) {
-    cout << "\nCharacter : Code\n";
-    for (int i = 0; i < 26; ++i) {
-        if (!codes[i].empty())
-            cout << char('a' + i) << " : " << codes[i] << "\n";
-    }
+                    cout << "\nEncoded message:\n";
 
-    cout << "\nEncoded message:\n";
-
-    ifstream file(filename);
-    char ch;
-    while (file.get(ch)) {
-        if (ch >= 'A' && ch <= 'Z')
-            ch = ch - 'A' + 'a';
-        if (ch >= 'a' && ch <= 'z')
-            cout << codes[ch - 'a'];
-    }
-    cout << "\n";
-    file.close();
-}
+                    ifstream file(filename);
+                    char ch;
+                    while (file.get(ch)) {
+                        if (ch >= 'A' && ch <= 'Z')
+                            ch = ch - 'A' + 'a';
+                        if (ch >= 'a' && ch <= 'z')
+                            cout << codes[ch - 'a'];
+                    }
+                    cout << "\n";
+                    file.close();
+                }
