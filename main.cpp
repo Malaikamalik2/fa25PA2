@@ -91,6 +91,7 @@ int createLeafNodes(int freq[]) {
 int buildEncodingTree(int nextFree) {
     // TODO:
     // 1. Create a MinHeap object.
+    MinHeap H;
     for (int i =0;i<nextFree; ++i)
         H.push(i, weightArr);
     if (H.size==0)
