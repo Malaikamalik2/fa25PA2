@@ -86,65 +86,32 @@ int createLeafNodes(int freq[]) {
     cout << "Created " << nextFree << " leaf nodes.\n";
     return nextFree;
 }
-
-// Step 3: Build the encoding tree using heap operations
+//step 3
 int buildEncodingTree(int nextFree) {
-    // TODO:
-    // 1. Create a MinHeap object.
     MinHeap H;
-    for (int i =0;i<nextFree; ++i)
+    //pushing all leaf
+    for (int i = 0; i < nextFree; ++i) {
         H.push(i, weightArr);
-    if (H.size==0)
-        return -1;
-    if (H.size==1)
-        return H.pop(weightArr);
-    //freeing slot for parent nodes
+        if (H.size==0)
+            return -1;
+        if (H.size ==1)
+            return H.pop(weightArr);
     int cur = nextFree;
-    //lightest
     while (H.size>1) {
-        int a =H.pop(weightArr);
-        //second lightest
-        int b =H.pop(weightArr);
+        int a = H.pop(weightArr);
+        int b = H.pop(weightArr);
 
-        //parent at index cur
         charArr[cur]='\0';
-        weightArr[cur] =weightArr[a]+weightArr[b];
-    leftArr[cur]=a;
-    rightArr[cur]=b;
-        //reinsert parent
+        weightArr[cur] = weightArr[a] + weightArr[b];
+        leftArr[cur] = a;
+        rightArr[cur] = b;
         H.push(cur, weightArr);
         cur++;
+
     }
-    //remaining is robot
-    return H.pop(weightArr);
+    return H.pop(weightArr);}
 }
 
-// Step 4: Use an STL stack to generate codes
-void generateCodes(int root, string codes[]) {
-    if (root<0)
-        return;
-    // TODO:
-    // Use stack<pair<int, string>> to simulate DFS traversal.
-    //defing item
-    struct Item {int node;string path;};
-    stack<Item> st;
-    st.push({root,""});
-    while(!st.empty()){
-        Item it = st.top();
-        st.pop();
-        int v =it.node;
-        bool leaf=(leftArr[v]==-1 && rightArr[v]==-1);
-        if (leaf) {
-            char c =charArr[v];
-            string code= it.path.empty() ?"0" : it.path;
-            if (c>='a'&& c<='z') codes[c-'a'] = code;
-        }else{
-            if (rightArr[v]!=-1) st.push({rightArr[v],it.path+"1"});
-            if (leftArr[v]!=-1) st.push({leftArr[v],it.path+"0"});
-
-        }
-    }
-}
 
 // Step 5: Print table and encoded message
 void encodeMessage(const string& filename, string codes[]) {
